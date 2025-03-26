@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class User(models.Model):
+class UserData(models.Model):
     userId = models.CharField(max_length=40, primary_key=True)
     userFullName = models.CharField(max_length=40, null=False)
     userEmail = models.EmailField(max_length=255, null=False)
@@ -11,7 +11,7 @@ class User(models.Model):
 
 class Resume(models.Model):
     resumeId = models.CharField(max_length=40, primary_key=True)
-    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    userId = models.ForeignKey(UserData, on_delete=models.CASCADE)
     cloudUrl = models.URLField(blank=True, null=True)
     skills = models.JSONField()
     experience = models.IntegerField(null=False)
@@ -19,7 +19,7 @@ class Resume(models.Model):
 
 class Interview(models.Model):
     interviewId = models.CharField(max_length=40, primary_key=True)
-    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    userId = models.ForeignKey(UserData, on_delete=models.CASCADE)
     skill = models.CharField(max_length=20)
     level = models.CharField(max_length=20)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -52,7 +52,7 @@ class practiceQuestion(models.Model):
 class comments(models.Model):
     commentId = models.CharField(max_length = 40, primary_key=True)
     questionId = models.ForeignKey(practiceQuestion,max_length= 30, on_delete=models.CASCADE)
-    userId = models.ForeignKey(User,max_length= 30, on_delete=models.CASCADE)
+    userId = models.ForeignKey(UserData,max_length= 30, on_delete=models.CASCADE)
     userFullName = models.CharField(max_length=50)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -77,7 +77,7 @@ class JobRole(models.Model):
 
 class Applicants(models.Model):
     applicantId = models.CharField(max_length = 40, primary_key=True)
-    userId = models.ForeignKey(User, on_delete = models.CASCADE)
+    userId = models.ForeignKey(UserData, on_delete = models.CASCADE)
     userName = models.CharField(max_length = 30)
     userEmail = models.EmailField()
     skills = models.TextField()
