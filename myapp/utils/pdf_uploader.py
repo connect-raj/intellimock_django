@@ -4,7 +4,7 @@ import cloudinary.uploader
 import tempfile
 from dotenv import load_dotenv
 
-def upload_pdf(pdf_file, folder='files'):
+def upload_pdf(pdf_file, fileName ,folder='files'):
     """
     Uploads a PDF file (either a file object or a URL) to Cloudinary and returns the uploaded file's URL.
     """
@@ -47,7 +47,7 @@ def upload_pdf(pdf_file, folder='files'):
 
         # Construct the direct-access URL
         public_id = upload_response.get("public_id")
-        pdf_url = f"https://res.cloudinary.com/{cloud_name}/raw/upload/{public_id}"
+        pdf_url = f"https://res.cloudinary.com/{cloud_name}/raw/upload/{fileName}.pdf"
 
         return pdf_url
     

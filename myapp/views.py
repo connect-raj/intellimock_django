@@ -172,23 +172,52 @@ def resumeView(request):
         try:
             data = json.loads(request.body)
             file = request.FILES.get('pdf_file')
+            fileName = str(uuid.uuid4())
             if not file: 
                 return JsonResponse({'msg': 'No File Provided'}, status=400)
             
             ## Logic for uploading files to S3 or Cloudinary and getting the URL
-            cloud_url = upload_pdf(file)
-            # skills = 
+            cloud_url = upload_pdf(file, fileName)
+            skills = extractSkills(file)
+
+            resumeInstance = Resume.objects.create(
+                resumeId = fileName,
+                userId = user_data['userId'],
+                cloud_url = cloud_url,
+                skills = skills,
+                experience = request.POST.get("experience") 
+            )
+
+            resumeInstance.save()
+
+            return JsonResponse({'msg': "Resume upload successful"}, status=200)
+            
+        except Exception as e:
+            return JsonResponse({'msg': str(e)}, status=500)
+        
+    if request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            resumeInstance = get_object_or_404(Resume, userId=user_data['userId'])
+            serializer = resumeSerializer(resumeInstance, data=data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({'msg': 'Updated resume successfully'}, status=201)
+            else:
+                return JsonResponse({'msg': 'error updating resume'}, status=400)
             
         except Exception as e:
             return JsonResponse({'msg': str(e)}, status=500)
         
 
-def test(request):
+    if request.method == "DELETE":
 
-    if request.method == "POST":
-        pdf_file = request.FILES.get('pdf_file')
+        try: 
+            resumeInstance = Resume.objects.get(userId=user_data['userID'])
+            resumeInstance.delete()
 
-        print(extract_skills_from_uploaded_pdf(pdf_file))
-
-    
-    return render(request, "test.html")
+            return JsonResponse({'msg':'resume deleted successfully'}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({'msg':'error deleting resume'}, status=400)

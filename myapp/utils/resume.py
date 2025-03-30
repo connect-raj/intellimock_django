@@ -67,7 +67,7 @@ def extract_skills(text):
             extracted_skills.add(skill)
     return list(extracted_skills)
 
-def extract_skills_from_uploaded_pdf(file_obj):
+def extractSkills(file_obj):
     """
     Extract skills from a PDF uploaded via Django request.FILES.
     """

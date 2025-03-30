@@ -7,5 +7,4 @@ urlpatterns = [
     path("delete/<id>", delUser, name="delUser"),
     path("user/<id>", userView, name="userView"),
     path("resume/", resumeView, name="resumeView"),
-    path("test", test, name="test"),
 ]
