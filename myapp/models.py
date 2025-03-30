@@ -1,4 +1,5 @@
 from django.db import models
+import cloudinary.models
 
 # Create your models here.
 class UserData(models.Model):
@@ -88,3 +89,10 @@ class IntSchedule(models.Model):
     scheduleId = models.CharField(max_length = 40, primary_key=True)
     applicantId = models.ForeignKey(Applicants, on_delete = models.CASCADE)
     intData = models.JSONField()
+
+class UploadedFile(models.Model):
+    file = cloudinary.models.CloudinaryField('file', resource_type="raw")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.file.url  # Returns the URL of the uploaded file
