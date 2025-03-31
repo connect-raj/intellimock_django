@@ -154,7 +154,7 @@ def userView(request, id):
             return JsonResponse({'msg': str(e)}, status=500)
         
 
-@api_view(['GET','POST'])
+@api_view(['GET','POST','PUT','DELETE'])
 def resumeView(request):
 
     token = request.headers.get('token').split(' ')[1]
