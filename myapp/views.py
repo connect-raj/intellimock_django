@@ -84,7 +84,7 @@ def logIn(request):
         data = json.loads(request.body)
         userEmail = data.get('userEmail')
         userPassword = data.get('userPassword')
-
+        print(userEmail, userPassword)
         if not userEmail or not userPassword:
             return JsonResponse({'msg': 'Email and password are required'}, status=400)
 
@@ -154,7 +154,8 @@ def userView(request, id):
             return JsonResponse({'msg': str(e)}, status=500)
         
 
-@api_view(['GET','POST'])
+@api_view(['GET','POST','PUT','DELETE'])
+@csrf_exempt
 def resumeView(request):
 
     token = request.headers.get('token').split(' ')[1]
