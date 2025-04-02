@@ -84,7 +84,7 @@ def logIn(request):
         data = json.loads(request.body)
         userEmail = data.get('userEmail')
         userPassword = data.get('userPassword')
-
+        print(userEmail, userPassword)
         if not userEmail or not userPassword:
             return JsonResponse({'msg': 'Email and password are required'}, status=400)
 
@@ -154,7 +154,8 @@ def userView(request, id):
             return JsonResponse({'msg': str(e)}, status=500)
         
 
-@api_view(['GET','POST'])
+@api_view(['GET','POST','PUT','DELETE'])
+@csrf_exempt
 def resumeView(request):
 
     token = request.headers.get('token').split(' ')[1]
@@ -221,3 +222,81 @@ def resumeView(request):
         
         except Exception as e:
             return JsonResponse({'msg':'error deleting resume'}, status=400)
+        
+
+@api_view(['GET', 'POST', 'DELETE'])
+@csrf_exempt
+def interview(request, intId):
+    
+    token = request.headers.get('token').split(' ')[1]
+    user_data = verify_jwt(token=token)
+    
+    if request.method == "GET":
+        try:
+            if intId:
+                interviewInstance = Interview.objects.get(interviewId=intId)
+                serializer = interviewSerializer(interviewInstance)
+                return JsonResponse(serializer.data, status=200)
+            else:
+                interviewInstance = IntSchedule.objects.get(applicantId=user_data['userId'])
+                serializer = interviewSerializer(interviewInstance)
+                return JsonResponse(serializer.data, status=200)
+        except IntSchedule.DoesNotExist:
+            return JsonResponse({'msg': 'No interview schedule found for this user'}, status=404)
+        
+
+    if request.method == "POST":
+
+        try:
+            data = json.loads(request.body)
+            interviewInstance = Interview.objects.create(
+                interviewId = str(uuid.uuid4()),
+                userId = user_data['userId'],
+                skill = data.get('skill'),
+                level = data.get('level')
+            )
+            serializer = interviewSerializer(interviewInstance)
+
+            if serializer.is_valid():
+                return JsonResponse({'msg': 'Interview scheduled successfully', 'data': serializer.data}, status=201)
+            
+            else:
+                return JsonResponse({'msg': 'error scheduling interview'}, status=400)
+            
+
+        except Exception as e:  
+            return JsonResponse({'msg': str(e)}, status=500)
+        
+
+    if request.method == "DELETE":
+        try: 
+            interviewInstance = Interview.objects.get(interviewId=intId)
+            interviewInstance.delete()
+
+            return JsonResponse({'msg':'Interview deleted successfully'}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({'msg':'error deleting interview'}, status=400)
+        
+
+@api_view(['GET', 'POST', 'DELETE'])
+@csrf_exempt
+def mockInterview(request, intId):
+    
+    token = request.headers.get('token').split(' ')[1]
+    user_data = verify_jwt(token=token)
+    
+    if request.method == "GET":
+        try:
+            if intId:
+                mockInterviewInstance = mockInterview.objects.get(mockInterviewId=intId)
+                serializer = mockIntSerializer(mockInterviewInstance)
+                return JsonResponse(serializer.data, status=200)
+            else:
+                mockInterviewInstance = IntSchedule.objects.get(applicantId=user_data['userId'])
+                serializer = mockIntSerializer(mockInterviewInstance)
+                return JsonResponse(serializer.data, status=200)
+        except IntSchedule.DoesNotExist:
+            return JsonResponse({'msg': 'No interview schedule found for this user'}, status=404)
+        
+
