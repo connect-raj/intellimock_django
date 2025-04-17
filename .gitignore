@@ -1,6 +1,0 @@
-venv/
-db.sqlite3
-.env
-templates/
-test.py
-.idea/
